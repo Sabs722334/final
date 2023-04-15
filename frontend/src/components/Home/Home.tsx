@@ -2,6 +2,7 @@ import { Socket } from "socket.io-client";
 import "./Home.css";
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 //create an interface for the props that you want to pass to this component
 interface HomePageProps {
@@ -9,6 +10,7 @@ interface HomePageProps {
 }
 
 function HomePage(props: HomePageProps) {
+  const navigate = useNavigate();
   const [signIn, setSignIn] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -38,11 +40,19 @@ function HomePage(props: HomePageProps) {
       const validPassword = checkPassword(password);
       if (validPassword) {
         const user = await axios.post("http://localhost:3001/auth/signup", { username, password })
-        console.log(user)
+        if(user.status === 200) {
+          navigate("/game")
+        } else {
+          alert(user.data.message)
+        }
       };
     } else {
       const user = await axios.post("http://localhost:3001/auth/signin", { username, password });
-      console.log(user)
+      if (user.status === 200) {
+        navigate("/game");
+      } else {
+        alert(user.data.message);
+      }
     }
   }
   return (
